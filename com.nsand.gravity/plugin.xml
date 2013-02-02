@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+	<extension
+		point="org.eclipse.ui.decorators">
+		<decorator
+        class="com.nsand.gravity.internal.ImageIconDecorator"
+        id="com.nsand.gravity.icon"
+        label="Image Files"
+        location="REPLACE"
+        state="true">
+			<enablement>
+				<objectClass
+					name="org.eclipse.core.resources.IFile" />
+			</enablement>
+		</decorator>
+	</extension>
+</plugin>
