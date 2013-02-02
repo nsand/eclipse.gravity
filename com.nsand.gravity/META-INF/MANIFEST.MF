@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Gravity Development Tools
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.nsand.gravity;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: com.nsand.gravity.Activator

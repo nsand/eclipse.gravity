@@ -6,7 +6,7 @@
 		<decorator
         class="com.nsand.gravity.internal.ImageIconDecorator"
         id="com.nsand.gravity.icon"
-        label="Image Files"
+        label="%decorator.label"
         location="REPLACE"
         state="true">
 			<enablement>
