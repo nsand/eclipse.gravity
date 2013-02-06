@@ -15,4 +15,15 @@
 			</enablement>
 		</decorator>
 	</extension>
+	<extension
+		point="org.eclipse.ui.propertyPages">
+		<page
+			class="com.nsand.gravity.internal.ProjectNaturePropertyPage"
+			id="com.nsand.gravity.naturePage"
+			name="%nature.props.label">
+			<enabledWhen>
+				<adapt type="org.eclipse.core.resources.IProject" />
+			</enabledWhen>
+		</page>
+	</extension>
 </plugin>
