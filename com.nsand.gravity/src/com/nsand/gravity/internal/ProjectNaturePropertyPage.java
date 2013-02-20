@@ -157,6 +157,7 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 		final IEclipsePreferences preferences = getProjectPreferences();
 		if (preferences != null) {
 			final String preference = preferences.get(IGravityPreferences.PROJECT_NATURES_KEY, ""); //$NON-NLS-1$
+			viewer.setAllChecked(false);
 			setChecked(preference.split(",")); //$NON-NLS-1$
 		}
 		super.performDefaults();
