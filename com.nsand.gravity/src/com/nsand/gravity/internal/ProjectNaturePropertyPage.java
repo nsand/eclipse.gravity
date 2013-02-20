@@ -32,6 +32,7 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 
 import com.nsand.gravity.Activator;
+import com.nsand.gravity.internal.preferences.IGravityPreferences;
 
 /**
  * @author nsand
@@ -128,7 +129,7 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 	private void initializeDefaults() {
 		final IEclipsePreferences preferences = getProjectPreferences();
 		if (preferences != null) {
-			final String preference = preferences.get("com.nsand.gravity.project_natures", null);
+			final String preference = preferences.get(IGravityPreferences.PROJECT_NATURES_KEY, null);
 			if (preference == null) {
 				try {
 					final String[] ids = project.getDescription().getNatureIds();
@@ -139,7 +140,7 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 						}
 						buffer.append(ids[i]);
 					}
-					preferences.put("com.nsand.gravity.project_natures", buffer.toString());
+					preferences.put(IGravityPreferences.PROJECT_NATURES_KEY, buffer.toString());
 				} catch (CoreException e) {
 					e.printStackTrace();
 				}
@@ -152,8 +153,8 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 	protected void performDefaults() {
 		final IEclipsePreferences preferences = getProjectPreferences();
 		if (preferences != null) {
-			final String preference = preferences.get("com.nsand.gravity.project_natures", "");
-			final String[] natures = preference.split(",");
+			final String preference = preferences.get(IGravityPreferences.PROJECT_NATURES_KEY, ""); //$NON-NLS-1$
+			final String[] natures = preference.split(","); //$NON-NLS-1$
 			for (int i = 0; i < natures.length; i++) {
 				viewer.setChecked(ResourcesPlugin.getWorkspace().getNatureDescriptor(natures[i]), true);
 			}
