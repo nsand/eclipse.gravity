@@ -15,9 +15,10 @@ import org.eclipse.core.resources.IProjectNatureDescriptor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -69,20 +70,40 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 						return ((IProjectNatureDescriptor) element).getLabel();
 					}
 				});
+				viewer.addCheckStateListener(new ICheckStateListener() {
+					
+					@Override
+					public void checkStateChanged(CheckStateChangedEvent event) {
+						if (event.getChecked()) {
+							enableDependencies((IProjectNatureDescriptor) event.getElement(), false);
+						}
+					}
+				});
 				viewer.setInput(descriptors);
 			} catch (CoreException e) { }
 		}
 		return composite;
 	}
 
+	private void enableDependencies(IProjectNatureDescriptor descriptor, boolean isDependency) {
+		final String[] dependencies = descriptor.getRequiredNatureIds();
+		for (int i = 0; i < dependencies.length; i++) {
+			enableDependencies(ResourcesPlugin.getWorkspace().getNatureDescriptor(dependencies[i]), true);
+		}
+		if (isDependency) {
+			viewer.setChecked(descriptor, true);
+		}
+	}
+
 	@Override
 	public boolean performOk() {
+		// TODO Need validation to make sure dependencies are enabled
 		if (viewer != null && !viewer.getControl().isDisposed()) {
 			try {
 				final IProjectDescription description = project.getDescription();
 				final Object[] checked = viewer.getCheckedElements();
 				final String[] ids = new String[checked.length];
-				// TODO Add required natures
+
 				for (int i = 0; i < checked.length; i++) {
 					ids[i] = ((IProjectNatureDescriptor) checked[i]).getNatureId();
 				}
