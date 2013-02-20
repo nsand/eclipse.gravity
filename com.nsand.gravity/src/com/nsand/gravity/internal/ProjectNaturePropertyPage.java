@@ -12,8 +12,11 @@ import java.util.Comparator;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNatureDescriptor;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -27,6 +30,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
+
+import com.nsand.gravity.Activator;
 
 /**
  * @author nsand
@@ -50,6 +55,7 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 		composite.setLayout(new GridLayout());
 		if (project != null) {
 			try {
+				initializeDefaults();
 				final IProjectDescription description = project.getDescription();
 				final IProjectNatureDescriptor[] descriptors = ResourcesPlugin.getWorkspace().getNatureDescriptors();
 				Arrays.sort(descriptors, new Comparator<IProjectNatureDescriptor>() {
@@ -80,6 +86,11 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 					}
 				});
 				viewer.setInput(descriptors);
+
+				final String[] natures = description.getNatureIds();
+				for (int i = 0; i < natures.length; i++) {
+					viewer.setChecked(ResourcesPlugin.getWorkspace().getNatureDescriptor(natures[i]), true);
+				}
 			} catch (CoreException e) { }
 		}
 		return composite;
@@ -112,5 +123,50 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 			} catch (CoreException e) { }
 		}
 		return super.performOk();
+	}
+
+	private void initializeDefaults() {
+		final IEclipsePreferences preferences = getProjectPreferences();
+		if (preferences != null) {
+			final String preference = preferences.get("com.nsand.gravity.project_natures", null);
+			if (preference == null) {
+				try {
+					final String[] ids = project.getDescription().getNatureIds();
+					final StringBuffer buffer = new StringBuffer();
+					for (int i = 0; i < ids.length; i++) {
+						if (buffer.length() > 0) {
+							buffer.append(',');
+						}
+						buffer.append(ids[i]);
+					}
+					preferences.put("com.nsand.gravity.project_natures", buffer.toString());
+				} catch (CoreException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		}
+	}
+
+	@Override
+	protected void performDefaults() {
+		final IEclipsePreferences preferences = getProjectPreferences();
+		if (preferences != null) {
+			final String preference = preferences.get("com.nsand.gravity.project_natures", "");
+			final String[] natures = preference.split(",");
+			for (int i = 0; i < natures.length; i++) {
+				viewer.setChecked(ResourcesPlugin.getWorkspace().getNatureDescriptor(natures[i]), true);
+			}
+		}
+		super.performDefaults();
+	}
+
+	private IEclipsePreferences getProjectPreferences() {
+		IEclipsePreferences preferences = null;
+		if (project != null) {
+			final IScopeContext context = new ProjectScope(project);
+			preferences = context.getNode(Activator.PLUGIN_ID);
+		}
+		return preferences;
 	}
 }
