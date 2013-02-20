@@ -88,15 +88,17 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 				});
 				viewer.setInput(descriptors);
 
-				final String[] natures = description.getNatureIds();
-				for (int i = 0; i < natures.length; i++) {
-					viewer.setChecked(ResourcesPlugin.getWorkspace().getNatureDescriptor(natures[i]), true);
-				}
+				setChecked(description.getNatureIds());
 			} catch (CoreException e) { }
 		}
 		return composite;
 	}
 
+	/**
+	 * Verifies that a nature's dependencies are met through the viewer
+	 * @param descriptor the descriptor to check for other required natures
+	 * @param isDependency if the descriptor itself is a dependency
+	 */
 	private void enableDependencies(IProjectNatureDescriptor descriptor, boolean isDependency) {
 		final String[] dependencies = descriptor.getRequiredNatureIds();
 		for (int i = 0; i < dependencies.length; i++) {
@@ -126,6 +128,10 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 		return super.performOk();
 	}
 
+	/**
+	 * Attempts to establish a guess at the 'default' natures for a project. These are stored
+	 * once before the first time the natures are displayed in the property page.
+	 */
 	private void initializeDefaults() {
 		final IEclipsePreferences preferences = getProjectPreferences();
 		if (preferences != null) {
@@ -141,10 +147,7 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 						buffer.append(ids[i]);
 					}
 					preferences.put(IGravityPreferences.PROJECT_NATURES_KEY, buffer.toString());
-				} catch (CoreException e) {
-					e.printStackTrace();
-				}
-				
+				} catch (CoreException e) { }
 			}
 		}
 	}
@@ -154,14 +157,25 @@ public class ProjectNaturePropertyPage extends PropertyPage implements IWorkbenc
 		final IEclipsePreferences preferences = getProjectPreferences();
 		if (preferences != null) {
 			final String preference = preferences.get(IGravityPreferences.PROJECT_NATURES_KEY, ""); //$NON-NLS-1$
-			final String[] natures = preference.split(","); //$NON-NLS-1$
-			for (int i = 0; i < natures.length; i++) {
-				viewer.setChecked(ResourcesPlugin.getWorkspace().getNatureDescriptor(natures[i]), true);
-			}
+			setChecked(preference.split(",")); //$NON-NLS-1$
 		}
 		super.performDefaults();
 	}
 
+	/**
+	 * Checks the elements corresponding to the natures in the viewer
+	 * @param natures an array of nature ids
+	 */
+	private void setChecked(String[] natures) {
+		for (int i = 0; i < natures.length; i++) {
+			viewer.setChecked(ResourcesPlugin.getWorkspace().getNatureDescriptor(natures[i]), true);
+		}
+	}
+
+	/**
+	 * Provides the plug-in's preference node for this project
+	 * @return an {@link IEclipsePreferences} node for this plug-in within the project's scope
+	 */
 	private IEclipsePreferences getProjectPreferences() {
 		IEclipsePreferences preferences = null;
 		if (project != null) {
