@@ -30,8 +30,8 @@
 		point="org.eclipse.ui.commands">
 		<command
 	        id="com.nsand.gravity.fileExplorer"
-	        name="Open File Explorer"
-	        description="Opens the resource in the system's default file explorer"
+	        name="%fileExplorer.label"
+	        description="Open the resource in the system's default file explorer"
 	        categoryId="org.eclipse.ui.category.navigate" />
 	</extension>
 	<extension
