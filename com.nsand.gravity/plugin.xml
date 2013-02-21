@@ -26,4 +26,48 @@
 			</enabledWhen>
 		</page>
 	</extension>
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+	        id="com.nsand.gravity.fileExplorer"
+	        name="%fileExplorer.label"
+	        description="Open the resource in the system's default file explorer"
+	        categoryId="org.eclipse.ui.category.navigate" />
+	</extension>
+	<!-- TODO enablement test based on if Desktop is available -->
+	<extension
+		point="org.eclipse.ui.handlers">
+		<handler
+			commandId="com.nsand.gravity.fileExplorer" class="com.nsand.gravity.internal.handlers.FileExplorerHandler">
+			<enabledWhen>
+				<iterate ifEmpty="false">
+					<adapt
+						type="org.eclipse.core.resources.IResource" />
+				</iterate>
+			</enabledWhen>
+		</handler>
+	</extension>
+	<extension
+		point="org.eclipse.ui.bindings">
+		<key
+			sequence="M2+F3"
+			commandId="com.nsand.gravity.fileExplorer"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+	</extension>
+	<extension
+		point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="menu:navigate?after=additions">
+			<command
+				commandId="com.nsand.gravity.fileExplorer">
+			</command>
+		</menuContribution>
+		<menuContribution
+			locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <command
+				commandId="com.nsand.gravity.fileExplorer" style="push">
+				<visibleWhen checkEnabled="true" />
+			</command>
+		</menuContribution>
+	</extension>
 </plugin>
