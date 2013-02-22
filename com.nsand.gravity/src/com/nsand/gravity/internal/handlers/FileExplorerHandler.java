@@ -6,7 +6,6 @@
 package com.nsand.gravity.internal.handlers;
 
 import java.awt.Desktop;
-import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -31,7 +30,7 @@ public class FileExplorerHandler extends AbstractHandler {
 				final IPath location = getContainerLocation(resource);
 				if (location != null) {
 					try {
-						Desktop.getDesktop().open(new File(location.toString()));
+						Desktop.getDesktop().open(location.toFile());
 					}
 					catch (IOException e) {
 					}
